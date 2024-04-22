@@ -95,6 +95,8 @@ public class Board {
                     if(pos.equals(destination))
                         contains = true;
                 }
+                System.out.println(p);
+                System.out.println(p.getTeam());
                 if(contains && p.getTeam() == turn){
                     if(isFree(destination)){
                         occupiedPositions.remove(origin);
@@ -106,8 +108,6 @@ public class Board {
                         occupiedPositions.remove(origin);
                         p.setPosition(destination);
                     }
-
-
                     turn ^= 1;
                     return;
                 }
