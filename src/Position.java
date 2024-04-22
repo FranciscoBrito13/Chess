@@ -21,7 +21,23 @@ public class Position {
     public String toString(){
         return "x = " + column + " y = " + row;
     }
-    public boolean equals(Position a){
-        return a.getRow() == row && a.getColumn() == column;
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj == null || obj.getClass()!= this.getClass())
+            return false;
+
+        Position position = (Position) obj;
+        return (position.getColumn() == column  && position.getRow() == row);
     }
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + column;
+        result = 31 * result + row;
+        return result;
+    }
+
 }

@@ -44,6 +44,12 @@ public class Board {
         addPieceAndPosition(new Queen(0, new Position(4, 1)));
         addPieceAndPosition(new Queen(1, new Position(4, 8)));
     }
+
+    public void showCurrentPositions(){
+        for(Position p : occupiedPositions){
+            System.out.println("Posição Ocupada: " + p);
+        }
+    }
     public List<Piece> getBoard(){
         return board;
     }
@@ -86,37 +92,49 @@ public class Board {
         board.removeIf(p -> p.getPosition().equals(position));
 
     }
+    private Piece getPieceFromPosition(Position p){
+        for(Piece piece : board){
+            if(piece.getPosition().equals(p)){
+                return piece;
+            }
+        }
+        return null;
+    }
     public void move(Position origin, Position destination){
         boolean contains = false;
 
         for(Piece p : board){
             if(p.getPosition().equals(origin)){
                 for(Position pos : p.getValidMoves(this)){
-                    if(pos.equals(destination))
+                    System.out.println(pos);
+                    if(pos.equals(destination)) {
                         contains = true;
+                    }
                 }
-                System.out.println(p);
-                System.out.println(p.getTeam());
+
                 if(contains && p.getTeam() == turn){
                     if(isFree(destination)){
-                        occupiedPositions.remove(origin);
+                        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
                         p.setPosition(destination);
                         occupiedPositions.add(destination);
 
                     } else {
                         removePieceByPosition(destination);
-                        occupiedPositions.remove(origin);
+                        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
                         p.setPosition(destination);
                     }
                     turn ^= 1;
                     return;
                 }
+                return;
             }
         }
     }
     public boolean isOccupiedByOpponent(Position current, Position newPosition) {
         Piece newPositionPiece = null;
-        if(isFree(newPosition)) return false;
+        if(isFree(newPosition)){
+            return false;
+        }
         for(Piece p: board){
             if(p.getPosition().equals(newPosition))
                 newPositionPiece = p;
@@ -124,6 +142,7 @@ public class Board {
         for(Piece p: board){
             if(p.getPosition().equals(current)){
                 if(p.getTeam() != newPositionPiece.getTeam())
+                    System.out.println("Is occupied by opponent");
                     return true;
             }
         }

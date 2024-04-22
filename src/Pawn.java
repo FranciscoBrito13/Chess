@@ -1,15 +1,14 @@
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
-
     private boolean firstMove = true;
-
 
     public Pawn(int team, Position position){
         super(team, position, 1);
     }
     //A positive value is to the right of the view of the pawn and to the front
-    private Position advanceRowColumn(int column,int row ){
+    private Position advanceColumnRow(int column, int row){
         Position newPosition = null;
         if(getTeam() == 0){
             newPosition = new Position(getPosition().getColumn() + column, getPosition().getRow() + row);
@@ -27,23 +26,22 @@ public class Pawn extends Piece{
         int currentRow = getPosition().getRow();
 
         if (firstMove) {
-            if (board.isFree(advanceRowColumn(0,2)) && board.isFree(advanceRowColumn(0,1))) {
-                validPositions.add(advanceRowColumn(0,2));
+            if (board.isFree(advanceColumnRow(0,2)) && board.isFree(advanceColumnRow(0,1))) {
+                validPositions.add(advanceColumnRow(0,2));
             }
             firstMove = false;
         }
 
-        if (board.isFree(advanceRowColumn(0,1))) {
-            validPositions.add(advanceRowColumn(0,1));
+        if (board.isFree(advanceColumnRow(0,1))) {
+            validPositions.add(advanceColumnRow(0,1));
         }
 
         // Check diagonal captures
-        if (currentColumn > 0 && board.isOccupiedByOpponent(getPosition(), advanceRowColumn(-1, 1))) {
-            validPositions.add(advanceRowColumn(-1, 1));
+        if (board.isOccupiedByOpponent(getPosition(), advanceColumnRow(-1, 1))) {
+            validPositions.add(advanceColumnRow(-1, 1));
         }
-
-        if (currentColumn < 8 && board.isOccupiedByOpponent(getPosition(),advanceRowColumn(1, 1))) {
-            validPositions.add(advanceRowColumn(1, 1));
+        if (board.isOccupiedByOpponent(getPosition(),advanceColumnRow(1, 1))) {
+            validPositions.add(advanceColumnRow(1, 1));
         }
 
         return validPositions;
