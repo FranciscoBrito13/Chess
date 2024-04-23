@@ -9,6 +9,35 @@ public class Position {
         this.row = row;
     }
 
+    public Position(char letter, int row){
+        switch(String.valueOf(letter)){
+            case "a":
+                this.column = 1;
+                break;
+            case "b":
+                this.column = 2;
+                break;
+            case "c":
+                this.column = 3;
+            case "d":
+                this.column = 4;
+                break;
+            case "e":
+                this.column = 5;
+                break;
+            case "f":
+                this.column = 6;
+                break;
+            case "g":
+                this.column = 7;
+                break;
+            case "h":
+                this.column = 8;
+                break;
+        }
+        this.row = row;
+    }
+
     public int getColumn(){
         return column;
     }
@@ -21,6 +50,8 @@ public class Position {
     public String toString(){
         return "x = " + column + " y = " + row;
     }
+
+
 
     @Override
     public boolean equals(Object obj) {

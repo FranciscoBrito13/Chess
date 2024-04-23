@@ -8,7 +8,7 @@ public class Pawn extends Piece{
         super(team, position, 1);
     }
     //A positive value is to the right of the view of the pawn and to the front
-    private Position advanceColumnRow(int column, int row){
+    private Position advanceColumnRow(int column, int row) {
         Position newPosition = null;
         if(getTeam() == 0){
             newPosition = new Position(getPosition().getColumn() + column, getPosition().getRow() + row);

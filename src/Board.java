@@ -106,7 +106,7 @@ public class Board {
         for(Piece p : board){
             if(p.getPosition().equals(origin)){
                 for(Position pos : p.getValidMoves(this)){
-                    System.out.println(pos);
+                    System.out.println("This is a valid move: " + pos);
                     if(pos.equals(destination)) {
                         contains = true;
                     }
