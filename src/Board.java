@@ -6,6 +6,7 @@ public class Board {
     private List<Piece> board;
     private HashSet<Position> occupiedPositions;
     private int turn;
+    private int moveCount = 0;
 
     public Board(){
         board = new ArrayList<>();
@@ -123,9 +124,11 @@ public class Board {
                         occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
                         p.setPosition(destination);
                     }
+                    moveCount++;
                     turn ^= 1;
                     return;
                 }
+                System.out.println("Invalid Move due to wrong team or not valid destination");
                 return;
             }
         }

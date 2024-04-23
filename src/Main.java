@@ -13,5 +13,8 @@ public class Main {
         b.toMatrix();
         b.move(new Position('b', 5), new Position('a',4) );
         b.toMatrix();
+        b.move(new Position('b', 4), new Position('b',5) );
+        b.toMatrix();
+
     }
 }
