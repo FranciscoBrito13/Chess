@@ -2,21 +2,14 @@ import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
+    public void setFirstMove(boolean firstMove) {
+        this.firstMove = firstMove;
+    }
+
     private boolean firstMove = true;
 
     public Pawn(int team, Position position){
         super(team, position, 1);
-    }
-    //A positive value is to the right of the view of the pawn and to the front
-    private Position advanceColumnRow(int column, int row) {
-        Position newPosition = null;
-        if(getTeam() == 0){
-            newPosition = new Position(getPosition().getColumn() + column, getPosition().getRow() + row);
-        }
-        if(getTeam() == 1){
-            newPosition = (new Position(getPosition().getColumn() - column, getPosition().getRow() - row));
-        }
-        return newPosition;
     }
 
     @Override
@@ -29,7 +22,7 @@ public class Pawn extends Piece{
             if (board.isFree(advanceColumnRow(0,2)) && board.isFree(advanceColumnRow(0,1))) {
                 validPositions.add(advanceColumnRow(0,2));
             }
-            firstMove = false;
+           // firstMove = false;
         }
 
         if (board.isFree(advanceColumnRow(0,1))) {

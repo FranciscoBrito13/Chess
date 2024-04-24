@@ -8,6 +8,12 @@ public class Board {
     private int turn;
     private int moveCount = 0;
 
+    public boolean isPawnMovedTwoSquares() {
+        return pawnMovedTwoSquares;
+    }
+
+    private boolean pawnMovedTwoSquares = false;
+
     public Board(){
         board = new ArrayList<>();
         occupiedPositions = new HashSet<>();
@@ -46,38 +52,7 @@ public class Board {
         addPieceAndPosition(new Queen(1, new Position(4, 8)));
     }
 
-    public void showCurrentPositions(){
-        for(Position p : occupiedPositions){
-            System.out.println("Posição Ocupada: " + p);
-        }
-    }
-    public List<Piece> getBoard(){
-        return board;
-    }
-    @Override
-    public String toString(){
-        String s = "";
-        for(Piece p : board){
-            s = s.concat(p.toString() + System.lineSeparator());
-        }
-        return s;
-    }
-    public void toMatrix(){
-        int[][] boardMatrix = new int[8][8];
-        for(Piece p : board){
-            int row = 7 - (p.getPosition().getRow() - 1); // Inverting the row index
-            int col = p.getPosition().getColumn() - 1;
-            boardMatrix[row][col] = p.getId();
-        }
-        for (int i = 0; i < boardMatrix.length; i++) {
-            for (int j = 0; j < boardMatrix[i].length; j++) {
-                System.out.print(boardMatrix[i][j] + " ");
 
-            }
-            System.out.println();
-        }
-        System.out.println(System.lineSeparator());
-    }
     private void addPieceAndPosition(Piece piece) {
         board.add(piece);
         occupiedPositions.add(piece.getPosition());
@@ -102,36 +77,94 @@ public class Board {
         return null;
     }
     public void move(Position origin, Position destination){
-        boolean contains = false;
-
-        for(Piece p : board){
-            if(p.getPosition().equals(origin)){
-                for(Position pos : p.getValidMoves(this)){
-                    System.out.println("This is a valid move: " + pos);
-                    if(pos.equals(destination)) {
-                        contains = true;
-                    }
-                }
-
-                if(contains && p.getTeam() == turn){
-                    if(isFree(destination)){
-                        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
-                        p.setPosition(destination);
-                        occupiedPositions.add(destination);
-
-                    } else {
-                        removePieceByPosition(destination);
-                        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
-                        p.setPosition(destination);
-                    }
-                    moveCount++;
-                    turn ^= 1;
+        Piece piece = findPieceAtPosition(origin);
+        if(piece == null){
+            System.out.println("No Piece Found at at the Origin");
+            return;
+        }
+        if(piece.getTeam() == turn) {
+            if (!isValidMove(piece, destination)) {
+                if (isEnPassant(piece, destination)) {
+                    playEnPassant(piece, origin, destination);
+                    System.out.println("Playing en Passant");
+                    return;
+                } else {
+                    System.out.println("That's Not a Valid Move");
                     return;
                 }
-                System.out.println("Invalid Move due to wrong team or not valid destination");
-                return;
+            } else {
+                if(isFree(destination)){
+                    playRegularMove(piece, origin, destination);
+                    System.out.println("Moving the Piece");
+                    return;
+                } else {
+                    playCaptureMove(piece, origin, destination);
+                    System.out.println("Playing a Capture Move");
+                    return;
+                }
+            }
+        } else {
+            System.out.println("Wrong Team Playing");
+        }
+    }
+
+    private Piece findPieceAtPosition(Position origin){
+        for(Piece piece : board){
+            if(piece.getPosition().equals(origin)){
+                return piece;
             }
         }
+        return null;
+    }
+    private boolean isValidMove(Piece piece, Position destination){
+        for(Position p : piece.getValidMoves(this)){
+            if(p.equals(destination)){
+                return true;
+            }
+        }
+        return false;
+    }
+    private boolean isEnPassant(Piece piece, Position destination){
+        return pawnMovedTwoSquares && (piece.getId() == 1) && (destination.equals(piece.advanceColumnRow(1, 1)) || destination.equals(piece.advanceColumnRow(-1, 1)) && isFree(destination));
+
+    }
+    private void playEnPassant(Piece piece,Position origin, Position destination){
+        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
+        piece.setPosition(destination);
+        occupiedPositions.add(destination);
+        occupiedPositions.removeIf(pos1 -> pos1.equals(piece.advanceColumnRow(0, -1)));
+        removePieceByPosition(piece.advanceColumnRow(0, -1));
+        pawnMovedTwoSquares = false;
+        moveCount++;
+        turn ^= 1;
+    }
+    private void playRegularMove(Piece piece,Position origin, Position destination){
+        if(piece.getId() == 1) {
+            if (destination.equals(piece.advanceColumnRow(0, 2))) {
+                pawnMovedTwoSquares = true;
+                System.out.println("A pawn just moved two squares");
+                occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
+                piece.setPosition(destination);
+                occupiedPositions.add(destination);
+                moveCount++;
+                turn ^= 1;
+            }
+            ((Pawn) piece).setFirstMove(false);
+        }
+        pawnMovedTwoSquares = false;
+        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
+        piece.setPosition(destination);
+        occupiedPositions.add(destination);
+        moveCount++;
+        turn ^= 1;
+    }
+    private void playCaptureMove(Piece piece,Position origin, Position destination){
+        pawnMovedTwoSquares = false;
+        removePieceByPosition(destination);
+        occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
+        piece.setPosition(destination);
+        moveCount++;
+        turn ^= 1;
     }
     public boolean isOccupiedByOpponent(Position current, Position newPosition) {
         Piece newPositionPiece = null;
@@ -153,5 +186,68 @@ public class Board {
     }
     public boolean isFree(Position p){
         return !occupiedPositions.contains(p);
+    }
+
+    public void showCurrentOccupiedPositions(){
+        for(Position p : occupiedPositions){
+            System.out.println("Posição Ocupada: " + p);
+        }
+    }
+    public List<Piece> getBoard(){
+        return board;
+    }
+
+    public void showAvailableMoves(Position origin){
+        Piece p = findPieceAtPosition(origin);
+        if(p == null){
+            System.out.println("No available moves except, maybe, enPassant");
+            return;
+        }
+        for(Position pos : p.getValidMoves(this)){
+            System.out.println(pos);
+        }
+    }
+    @Override
+    public String toString(){
+        String s = "";
+        for(Piece p : board){
+            s = s.concat(p.toString() + System.lineSeparator());
+        }
+        return s;
+    }
+    public void pieceToMatrix(){
+        int[][] boardMatrix = new int[8][8];
+        for(Piece p : board){
+            int row = 7 - (p.getPosition().getRow() - 1); // Inverting the row index
+            int col = p.getPosition().getColumn() - 1;
+            boardMatrix[row][col] = p.getId();
+        }
+        for (int i = 0; i < boardMatrix.length; i++) {
+            for (int j = 0; j < boardMatrix[i].length; j++) {
+                System.out.print(boardMatrix[i][j] + " ");
+
+            }
+            System.out.println();
+        }
+        System.out.println(System.lineSeparator());
+    }
+    public void teamToMatrix(){
+        int[][] boardMatrix = new int[8][8];
+        for(Piece p : board){
+            int row = 7 - (p.getPosition().getRow() - 1); // Inverting the row index
+            int col = p.getPosition().getColumn() - 1;
+            if(p.getTeam() == 0)
+                boardMatrix[row][col] = 1;
+            if(p.getTeam() == 1)
+                boardMatrix[row][col] = 2;
+        }
+        for (int i = 0; i < boardMatrix.length; i++) {
+            for (int j = 0; j < boardMatrix[i].length; j++) {
+                System.out.print(boardMatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println(System.lineSeparator());
+
     }
 }

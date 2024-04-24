@@ -28,4 +28,16 @@ public abstract class Piece {
     public int getId() {
         return id;
     }
+
+    //A positive value is to the right of the view of the pawn and to the front
+    protected Position advanceColumnRow(int column, int row) {
+        Position newPosition = null;
+        if(getTeam() == 0){
+            newPosition = new Position(getPosition().getColumn() + column, getPosition().getRow() + row);
+        }
+        if(getTeam() == 1){
+            newPosition = (new Position(getPosition().getColumn() - column, getPosition().getRow() - row));
+        }
+        return newPosition;
+    }
 }
