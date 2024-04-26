@@ -3,7 +3,6 @@ import java.util.ArrayList;
 public abstract class Piece {
     private final int team; //0 for white 1 for black
     private Position position;
-
     private int id;
 
     public Piece(int team, Position position, int id){
@@ -37,17 +36,21 @@ public abstract class Piece {
         int newRow = getPosition().getRow() + row;
 
         if (getTeam() == 0) {
-            if (newColumn >= 0 && newColumn < 9 && newRow >= 0 && newRow < 9) {
+            if (newColumn > 0 && newColumn < 9 && newRow > 0 && newRow < 9) {
                 newPosition = new Position(newColumn, newRow);
             }
         } else if (getTeam() == 1) {
             int newColumnReverse = getPosition().getColumn() - column;
             int newRowReverse = getPosition().getRow() - row;
-            if (newColumnReverse >= 0 && newColumnReverse < 9 && newRowReverse >= 0 && newRowReverse < 9) {
+            if (newColumnReverse > 0 && newColumnReverse < 9 && newRowReverse > 0 && newRowReverse < 9) {
                 newPosition = new Position(newColumnReverse, newRowReverse);
             }
         }
 
         return newPosition;
+    }
+
+    protected Position up(){
+        return advanceColumnRow(0, 1);
     }
 }

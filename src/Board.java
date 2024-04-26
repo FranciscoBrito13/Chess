@@ -21,35 +21,35 @@ public class Board {
     }
     public void startBoard(){
         //Adds the pawns
-        for(int i = 1; i <= 8; i++){
+        for(int i = 1; i <= COMMONS.BOARD_SIZE; i++){
             addPieceAndPosition(new Pawn(0, new Position(i, 2)));
             addPieceAndPosition(new Pawn(1, new Position(i , 7)));
         }
         //Adds the rooks to the board
         addPieceAndPosition(new Rook(0, new Position(1, 1)));
-        addPieceAndPosition(new Rook(0, new Position(8, 1)));
-        addPieceAndPosition(new Rook(1, new Position(1, 8)));
-        addPieceAndPosition(new Rook(1, new Position(8, 8)));
+        addPieceAndPosition(new Rook(0, new Position(COMMONS.BOARD_SIZE, 1)));
+        addPieceAndPosition(new Rook(1, new Position(1, COMMONS.BOARD_SIZE)));
+        addPieceAndPosition(new Rook(1, new Position(COMMONS.BOARD_SIZE, COMMONS.BOARD_SIZE)));
 
         //Adds the both kings
         addPieceAndPosition(new King(0, new Position(5, 1)));
-        addPieceAndPosition(new King(1, new Position(5, 8)));
+        addPieceAndPosition(new King(1, new Position(5, COMMONS.BOARD_SIZE)));
 
         //Adds the Bishops
         addPieceAndPosition(new Bishop(0, new Position(3, 1)));
         addPieceAndPosition(new Bishop(0, new Position(6, 1)));
-        addPieceAndPosition(new Bishop(1, new Position(3, 8)));
-        addPieceAndPosition(new Bishop(1, new Position(6, 8)));
+        addPieceAndPosition(new Bishop(1, new Position(3, COMMONS.BOARD_SIZE)));
+        addPieceAndPosition(new Bishop(1, new Position(6, COMMONS.BOARD_SIZE)));
 
         //Adds the Knights
         addPieceAndPosition(new Knight(0, new Position(2, 1)));
         addPieceAndPosition(new Knight(0, new Position(7, 1)));
-        addPieceAndPosition(new Knight(1, new Position(2, 8)));
-        addPieceAndPosition(new Knight(1, new Position(7, 8)));
+        addPieceAndPosition(new Knight(1, new Position(2, COMMONS.BOARD_SIZE)));
+        addPieceAndPosition(new Knight(1, new Position(7, COMMONS.BOARD_SIZE)));
 
         //Adds the Queens
         addPieceAndPosition(new Queen(0, new Position(4, 1)));
-        addPieceAndPosition(new Queen(1, new Position(4, 8)));
+        addPieceAndPosition(new Queen(1, new Position(4, COMMONS.BOARD_SIZE)));
     }
 
 
@@ -102,6 +102,7 @@ public class Board {
                     System.out.println("Playing a Capture Move");
                     return;
                 }
+
             }
         } else {
             System.out.println("Wrong Team Playing");
@@ -156,6 +157,8 @@ public class Board {
             }
             ((Pawn) piece).setFirstMove(false);
         }
+        if(piece.getId() == 4) ((Rook) piece).setHasMoved(true);
+        if(piece.getId() == 6) ((King) piece).setHasMoved(true);
         pawnMovedTwoSquares = false;
         occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
         piece.setPosition(destination);
