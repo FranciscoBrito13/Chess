@@ -108,7 +108,7 @@ public class Board {
         }
     }
 
-    private Piece findPieceAtPosition(Position origin){
+    public Piece findPieceAtPosition(Position origin){
         for(Piece piece : board){
             if(piece.getPosition().equals(origin)){
                 return piece;
@@ -117,9 +117,13 @@ public class Board {
         return null;
     }
     private boolean isValidMove(Piece piece, Position destination){
-        for(Position p : piece.getValidMoves(this)){
-            if(p.equals(destination)){
-                return true;
+        List<Position> validMoves = piece.getValidMoves(this);
+        if(validMoves.isEmpty()) return false;
+        for(Position p : validMoves){
+            if(p != null) {
+                if (p.equals(destination)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -148,6 +152,7 @@ public class Board {
                 occupiedPositions.add(destination);
                 moveCount++;
                 turn ^= 1;
+                return;
             }
             ((Pawn) piece).setFirstMove(false);
         }
@@ -200,12 +205,14 @@ public class Board {
     public void showAvailableMoves(Position origin){
         Piece p = findPieceAtPosition(origin);
         if(p == null){
-            System.out.println("No available moves except, maybe, enPassant");
             return;
         }
+        int count = 0;
         for(Position pos : p.getValidMoves(this)){
             System.out.println(pos);
+            count++;
         }
+        if(count == 0) System.out.println("No available moves except, maybe, enPassant");
     }
     @Override
     public String toString(){
@@ -250,4 +257,5 @@ public class Board {
         System.out.println(System.lineSeparator());
 
     }
+
 }

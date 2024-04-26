@@ -19,6 +19,7 @@ public class Position {
                 break;
             case "c":
                 this.column = 3;
+                break;
             case "d":
                 this.column = 4;
                 break;

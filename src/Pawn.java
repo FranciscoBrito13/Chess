@@ -22,7 +22,6 @@ public class Pawn extends Piece{
             if (board.isFree(advanceColumnRow(0,2)) && board.isFree(advanceColumnRow(0,1))) {
                 validPositions.add(advanceColumnRow(0,2));
             }
-           // firstMove = false;
         }
 
         if (board.isFree(advanceColumnRow(0,1))) {
@@ -30,10 +29,10 @@ public class Pawn extends Piece{
         }
 
         // Check diagonal captures
-        if (board.isOccupiedByOpponent(getPosition(), advanceColumnRow(-1, 1))) {
+        if (board.isOccupiedByOpponent(getPosition(), advanceColumnRow(-1, 1)) && board.findPieceAtPosition(advanceColumnRow(-1, 1)).getTeam() != getTeam()) {
             validPositions.add(advanceColumnRow(-1, 1));
         }
-        if (board.isOccupiedByOpponent(getPosition(),advanceColumnRow(1, 1))) {
+        if (board.isOccupiedByOpponent(getPosition(),advanceColumnRow(1, 1))  && board.findPieceAtPosition(advanceColumnRow(1, 1)).getTeam() != getTeam()) {
             validPositions.add(advanceColumnRow(1, 1));
         }
 

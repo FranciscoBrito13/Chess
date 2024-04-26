@@ -31,13 +31,23 @@ public abstract class Piece {
 
     //A positive value is to the right of the view of the pawn and to the front
     protected Position advanceColumnRow(int column, int row) {
+
         Position newPosition = null;
-        if(getTeam() == 0){
-            newPosition = new Position(getPosition().getColumn() + column, getPosition().getRow() + row);
+        int newColumn = getPosition().getColumn() + column;
+        int newRow = getPosition().getRow() + row;
+
+        if (getTeam() == 0) {
+            if (newColumn >= 0 && newColumn < 9 && newRow >= 0 && newRow < 9) {
+                newPosition = new Position(newColumn, newRow);
+            }
+        } else if (getTeam() == 1) {
+            int newColumnReverse = getPosition().getColumn() - column;
+            int newRowReverse = getPosition().getRow() - row;
+            if (newColumnReverse >= 0 && newColumnReverse < 9 && newRowReverse >= 0 && newRowReverse < 9) {
+                newPosition = new Position(newColumnReverse, newRowReverse);
+            }
         }
-        if(getTeam() == 1){
-            newPosition = (new Position(getPosition().getColumn() - column, getPosition().getRow() - row));
-        }
+
         return newPosition;
     }
 }
