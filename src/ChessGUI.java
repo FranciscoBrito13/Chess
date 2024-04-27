@@ -120,11 +120,4 @@ public class ChessGUI extends JFrame {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ChessGUI gui = new ChessGUI();
-            gui.setVisible(true);
-        });
-    }
 }
