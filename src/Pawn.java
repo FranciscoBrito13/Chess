@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
@@ -29,16 +28,20 @@ public class Pawn extends Piece{
         }
 
         // Check diagonal captures
-        if (board.isOccupiedByOpponent(getPosition(), advanceColumnRow(-1, 1)) && board.findPieceAtPosition(advanceColumnRow(-1, 1)).getTeam() != getTeam()) {
-            validPositions.add(advanceColumnRow(-1, 1));
+        Position p1 = advanceColumnRow(-1, 1);
+        setAttackedPosition(p1);
+        if (board.isOccupiedByOpponent(getPosition(), p1) && board.findPieceAtPosition(p1).getTeam() != getTeam()) {
+            validPositions.add(p1);
         }
-        if (board.isOccupiedByOpponent(getPosition(),advanceColumnRow(1, 1))  && board.findPieceAtPosition(advanceColumnRow(1, 1)).getTeam() != getTeam()) {
-            validPositions.add(advanceColumnRow(1, 1));
+        Position p2 = advanceColumnRow(1, 1);
+        setAttackedPosition(p2);
+        if (board.isOccupiedByOpponent(getPosition(),p2)  && board.findPieceAtPosition(p2).getTeam() != getTeam()) {
+            validPositions.add(p2);
         }
 
         return validPositions;
     }
-    
+
     @Override
     public String toString(){
         return "Playing for team: " + getTeam() + ". Im a Pawn with id = 1." + " My current Position is: x = " + getPosition().getColumn() + " y = " + getPosition().getRow();

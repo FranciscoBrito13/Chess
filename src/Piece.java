@@ -1,6 +1,10 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class Piece {
+
+    private HashSet<Position> attackedPosition;
+
     private final int team; //0 for white 1 for black
     private Position position;
     private int id;
@@ -9,6 +13,8 @@ public abstract class Piece {
         this.team = team;
         this.position = position;
         this.id = id;
+        attackedPosition = new HashSet<>();
+
     }
     public abstract ArrayList<Position> getValidMoves(Board board);
 
@@ -52,5 +58,24 @@ public abstract class Piece {
 
     protected Position up(){
         return advanceColumnRow(0, 1);
+    }
+
+    protected HashSet<Position> getAttackedPosition() {
+        return attackedPosition;
+    }
+
+    public void setAttackedPosition(Position position) {
+        attackedPosition.add(position);
+    }
+
+    public HashSet<Position> getAttackedPosition(Board board){
+        if(attackedPosition == null || attackedPosition.isEmpty()){
+            getValidMoves(board);
+        }
+        return attackedPosition;
+    }
+
+    public void resetAttackedPosition(){
+        attackedPosition.clear();
     }
 }

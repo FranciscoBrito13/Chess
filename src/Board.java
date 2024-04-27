@@ -1,22 +1,26 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 public class Board {
     private List<Piece> board;
     private HashSet<Position> occupiedPositions;
-    private int turn;
-    private int moveCount = 0;
-
+    private HashSet<Position> whiteAttackedPositions;
+    private HashSet<Position> blackAttackedPositions;
+    private int turn;    private int moveCount = 0;
     public boolean isPawnMovedTwoSquares() {
         return pawnMovedTwoSquares;
     }
-
     private boolean pawnMovedTwoSquares = false;
+
 
     public Board(){
         board = new ArrayList<>();
         occupiedPositions = new HashSet<>();
+        whiteAttackedPositions = new HashSet<>();
+        blackAttackedPositions = new HashSet<>();
+        startBoard();
         turn = 0;
     }
     public void startBoard(){
@@ -50,9 +54,9 @@ public class Board {
         //Adds the Queens
         addPieceAndPosition(new Queen(0, new Position(4, 1)));
         addPieceAndPosition(new Queen(1, new Position(4, COMMONS.BOARD_SIZE)));
+        updateWhiteAttackedPosition();
+        updateBlackAttackedPosition();
     }
-
-
     private void addPieceAndPosition(Piece piece) {
         board.add(piece);
         occupiedPositions.add(piece.getPosition());
@@ -86,29 +90,30 @@ public class Board {
             if (!isValidMove(piece, destination)) {
                 if (isEnPassant(piece, destination)) {
                     playEnPassant(piece, origin, destination);
-                    System.out.println("Playing en Passant");
+                    //System.out.println("Playing en Passant");
+                    piece.resetAttackedPosition();
                     return;
                 } else {
                     System.out.println("That's Not a Valid Move");
                     return;
                 }
             } else {
+
                 if(isFree(destination)){
                     playRegularMove(piece, origin, destination);
-                    System.out.println("Moving the Piece");
-                    return;
+                    //System.out.println("Moving the Piece");
                 } else {
                     playCaptureMove(piece, origin, destination);
-                    System.out.println("Playing a Capture Move");
-                    return;
+                    //System.out.println("Playing a Capture Move");
                 }
-
+                piece.resetAttackedPosition();
+                updateWhiteAttackedPosition();
+                updateBlackAttackedPosition();
             }
         } else {
             System.out.println("Wrong Team Playing");
         }
     }
-
     public Piece findPieceAtPosition(Position origin){
         for(Piece piece : board){
             if(piece.getPosition().equals(origin)){
@@ -147,7 +152,7 @@ public class Board {
         if(piece.getId() == 1) {
             if (destination.equals(piece.advanceColumnRow(0, 2))) {
                 pawnMovedTwoSquares = true;
-                System.out.println("A pawn just moved two squares");
+                //System.out.println("A pawn just moved two squares");
                 occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
                 piece.setPosition(destination);
                 occupiedPositions.add(destination);
@@ -185,9 +190,10 @@ public class Board {
         }
         for(Piece p: board){
             if(p.getPosition().equals(current)){
-                if(p.getTeam() != newPositionPiece.getTeam())
-                    System.out.println("Is occupied by opponent");
+                if(p.getTeam() != newPositionPiece.getTeam()) {
+                    //System.out.println("Is occupied by opponent");
                     return true;
+                }
             }
         }
         return false;
@@ -195,7 +201,6 @@ public class Board {
     public boolean isFree(Position p){
         return !occupiedPositions.contains(p);
     }
-
     public void showCurrentOccupiedPositions(){
         for(Position p : occupiedPositions){
             System.out.println("Posição Ocupada: " + p);
@@ -204,7 +209,6 @@ public class Board {
     public List<Piece> getBoard(){
         return board;
     }
-
     public void showAvailableMoves(Position origin){
         Piece p = findPieceAtPosition(origin);
         if(p == null){
@@ -259,6 +263,39 @@ public class Board {
         }
         System.out.println(System.lineSeparator());
 
+    }
+
+    public void updateWhiteAttackedPosition(){
+        for(Piece piece : board){
+            if(piece.getTeam() == 0) {
+                if (piece.getAttackedPosition(this) != null && !piece.getAttackedPosition().isEmpty()) {
+                    whiteAttackedPositions.addAll(piece.getAttackedPosition(this));
+                }
+            }
+        }
+    }
+
+    public void updateBlackAttackedPosition(){
+        for(Piece piece : board){
+            if(piece.getTeam() == 1)
+                if(piece.getAttackedPosition(this) != null && !piece.getAttackedPosition().isEmpty()) {
+                    blackAttackedPositions.addAll(piece.getAttackedPosition(this));
+                }
+        }
+    }
+
+    public void showAttackedPositions(){
+        System.out.println("Postions attacked by white");
+        for(Position position : whiteAttackedPositions){
+            if(position != null)
+                System.out.println(position);
+        }
+        System.out.println(System.lineSeparator());
+        System.out.println("Postions attacked by black");
+        for(Position position : blackAttackedPositions){
+            if(position != null)
+                System.out.println(position);
+        }
     }
 
 }

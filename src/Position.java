@@ -11,7 +11,7 @@ public class Position {
 
     public Position(char letter, int row){
         switch(String.valueOf(letter)){
-            case "a":
+            case "a" :
                 this.column = 1;
                 break;
             case "b":

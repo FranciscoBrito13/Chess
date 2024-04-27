@@ -27,10 +27,12 @@ public class King extends Piece{
             if(position != null){
                 if (board.isFree(position)) {
                     validPositions.add(position);
+                    setAttackedPosition(position);
                 } else {
                     Piece pieceAtPosition = board.findPieceAtPosition(position);
                     if(pieceAtPosition.getTeam() != getTeam()){
                         validPositions.add(position);
+                        setAttackedPosition(position);
                     }
                 }
             }
