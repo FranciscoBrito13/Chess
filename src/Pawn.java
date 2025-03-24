@@ -1,10 +1,6 @@
 import java.util.ArrayList;
 
 public class Pawn extends Piece{
-    public void setFirstMove(boolean firstMove) {
-        this.firstMove = firstMove;
-    }
-
     private boolean firstMove = true;
 
     public Pawn(int team, Position position){
@@ -45,5 +41,9 @@ public class Pawn extends Piece{
     @Override
     public String toString(){
         return "Playing for team: " + getTeam() + ". Im a Pawn with id = 1." + " My current Position is: x = " + getPosition().getColumn() + " y = " + getPosition().getRow();
+    }
+
+    public void setFirstMove(boolean firstMove) {
+        this.firstMove = firstMove;
     }
 }

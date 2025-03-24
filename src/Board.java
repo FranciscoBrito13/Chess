@@ -1,13 +1,12 @@
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 public class Board {
     private List<Piece> board;
     private HashSet<Position> occupiedPositions;
-    private HashSet<Position> whiteAttackedPositions;
-    private HashSet<Position> blackAttackedPositions;
+    private HashSet<Position> attackedPositionsByWhite;
+    private HashSet<Position> attackedPositionsByBlack;
     private int turn;    private int moveCount = 0;
     public boolean isPawnMovedTwoSquares() {
         return pawnMovedTwoSquares;
@@ -18,8 +17,8 @@ public class Board {
     public Board(){
         board = new ArrayList<>();
         occupiedPositions = new HashSet<>();
-        whiteAttackedPositions = new HashSet<>();
-        blackAttackedPositions = new HashSet<>();
+        attackedPositionsByWhite = new HashSet<>();
+        attackedPositionsByBlack = new HashSet<>();
         startBoard();
         turn = 0;
     }
@@ -54,8 +53,8 @@ public class Board {
         //Adds the Queens
         addPieceAndPosition(new Queen(0, new Position(4, 1)));
         addPieceAndPosition(new Queen(1, new Position(4, COMMONS.BOARD_SIZE)));
-        updateWhiteAttackedPosition();
-        updateBlackAttackedPosition();
+        updateAttackedPositionByWhite();
+        updateAttackedPositionByBlack();
     }
     private void addPieceAndPosition(Piece piece) {
         board.add(piece);
@@ -64,10 +63,10 @@ public class Board {
     private void removePieceAndPositionByPiece(Piece piece) {
         occupiedPositions.remove(piece.getPosition());
         board.remove(piece);
-    }
+    } //Funcao axiliar nao usada
     private void removePositionByPiece(Piece piece){
         occupiedPositions.remove(piece.getPosition());
-    }
+    } //Funcao axiliar nao usada
     private void removePieceByPosition(Position position){
         board.removeIf(p -> p.getPosition().equals(position));
 
@@ -88,15 +87,14 @@ public class Board {
         }
         if(piece.getTeam() == turn) {
             if (!isValidMove(piece, destination)) {
-                if (isEnPassant(piece, destination)) {
+                if(isEnPassant(piece, destination)) {
                     playEnPassant(piece, origin, destination);
                     //System.out.println("Playing en Passant");
                     piece.resetAttackedPosition();
-                    return;
                 } else {
                     System.out.println("That's Not a Valid Move");
-                    return;
                 }
+                return;
             } else {
 
                 if(isFree(destination)){
@@ -107,9 +105,10 @@ public class Board {
                     //System.out.println("Playing a Capture Move");
                 }
                 piece.resetAttackedPosition();
-                updateWhiteAttackedPosition();
-                updateBlackAttackedPosition();
+                updateAttackedPositionByWhite();
+                updateAttackedPositionByBlack();
             }
+            showAttackedPositions();
         } else {
             System.out.println("Wrong Team Playing");
         }
@@ -123,6 +122,7 @@ public class Board {
         return null;
     }
     private boolean isValidMove(Piece piece, Position destination){
+        //ADICIONAR: NÃO É UM MOVE VÁLIDO SE O REI DA PROPRIA EQUIPA TIVER EM CHECK E DEPOIS DO MOVE CONTINUAR EM CHECK
         List<Position> validMoves = piece.getValidMoves(this);
         if(validMoves.isEmpty()) return false;
         for(Position p : validMoves){
@@ -152,12 +152,14 @@ public class Board {
         if(piece.getId() == 1) {
             if (destination.equals(piece.advanceColumnRow(0, 2))) {
                 pawnMovedTwoSquares = true;
+
                 //System.out.println("A pawn just moved two squares");
                 occupiedPositions.removeIf(pos1 -> pos1.equals(origin));
                 piece.setPosition(destination);
                 occupiedPositions.add(destination);
                 moveCount++;
                 turn ^= 1;
+                ((Pawn) piece).setFirstMove(false);
                 return;
             }
             ((Pawn) piece).setFirstMove(false);
@@ -197,7 +199,7 @@ public class Board {
             }
         }
         return false;
-    }
+    } //Funcao axiliar nao usada
     public boolean isFree(Position p){
         return !occupiedPositions.contains(p);
     }
@@ -244,7 +246,7 @@ public class Board {
             System.out.println();
         }
         System.out.println(System.lineSeparator());
-    }
+    } //Funcao axiliar nao usada
     public void teamToMatrix(){
         int[][] boardMatrix = new int[8][8];
         for(Piece p : board){
@@ -263,36 +265,36 @@ public class Board {
         }
         System.out.println(System.lineSeparator());
 
-    }
+    } //Funcao axiliar nao usada
 
-    public void updateWhiteAttackedPosition(){
+    public void updateAttackedPositionByWhite(){ //Positions that the White pieces attack
         for(Piece piece : board){
             if(piece.getTeam() == 0) {
                 if (piece.getAttackedPosition(this) != null && !piece.getAttackedPosition().isEmpty()) {
-                    whiteAttackedPositions.addAll(piece.getAttackedPosition(this));
+                    attackedPositionsByWhite.addAll(piece.getAttackedPosition(this));
                 }
             }
         }
     }
 
-    public void updateBlackAttackedPosition(){
+    public void updateAttackedPositionByBlack(){ //Positions that the black pieces attack
         for(Piece piece : board){
             if(piece.getTeam() == 1)
                 if(piece.getAttackedPosition(this) != null && !piece.getAttackedPosition().isEmpty()) {
-                    blackAttackedPositions.addAll(piece.getAttackedPosition(this));
+                    attackedPositionsByBlack.addAll(piece.getAttackedPosition(this));
                 }
         }
     }
 
     public void showAttackedPositions(){
         System.out.println("Postions attacked by white");
-        for(Position position : whiteAttackedPositions){
+        for(Position position : attackedPositionsByWhite){
             if(position != null)
                 System.out.println(position);
         }
         System.out.println(System.lineSeparator());
         System.out.println("Postions attacked by black");
-        for(Position position : blackAttackedPositions){
+        for(Position position : attackedPositionsByBlack){
             if(position != null)
                 System.out.println(position);
         }

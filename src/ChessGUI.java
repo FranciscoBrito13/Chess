@@ -17,6 +17,11 @@ public class ChessGUI extends JFrame {
 
     // Add a flag to track if it's the first or second touch
     private boolean isFirstTouch = true;
+
+    private boolean isDragging = false;
+    private Position dragStartPosition;
+    private int dragStartX, dragStartY;
+
     private Board board;
 
     public ChessGUI() {
@@ -39,14 +44,18 @@ public class ChessGUI extends JFrame {
         chessboardPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 int x = e.getX() / SQUARE_SIZE + 1;
                 int y = (BOARD_SIZE - 1) - (e.getY() / SQUARE_SIZE) + 1;
 
                 if (isFirstTouch) {
+                    setTitle("Peça Selecionada, escolha para onde quer mexer");
                     originPosition = new Position(x, y);
                     System.out.println("Origin: " + originPosition);
                     isFirstTouch = false;
                 } else {
+                    setTitle("Chess Game");
+
                     destinationPosition = new Position(x, y);
                     System.out.println("Destination: " + destinationPosition);
 
@@ -69,9 +78,9 @@ public class ChessGUI extends JFrame {
         for (int y = BOARD_SIZE - 1; y >= 0; y--) { // Start drawing from the bottom row
             for (int x = 0; x < BOARD_SIZE; x++) { // Start from the left-most column
                 if (white) {
-                    g.setColor(Color.GRAY);
+                    g.setColor(Color.WHITE);
                 } else {
-                    g.setColor(Color.BLUE);
+                    g.setColor(Color.DARK_GRAY);
                 }
                 g.fillRect(x * SQUARE_SIZE, y * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
                 white = !white;
